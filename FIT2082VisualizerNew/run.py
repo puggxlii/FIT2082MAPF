@@ -11,7 +11,7 @@ def simulation_canvas  (parent,**config):
 
 def repeater(root):
     global Info,the_canvas,the_frame
-    t=0
+    t=1
     while 1:
         if continuePlay:
             tt=Info.move_agents(t,the_canvas,the_frame)
@@ -19,7 +19,7 @@ def repeater(root):
                 break
             t+=1
         root.update()
-        time.sleep(0.8)
+        time.sleep(0.4)
 
 
 class Example(Frame):
@@ -31,8 +31,8 @@ class Example(Frame):
         self.text.configure(yscrollcommand=self.vsb.set)
         self.vsb.pack(side="right", fill="y")
         self.text.pack(side="left", fill="both", expand=True)
-        self.text.tag_config('current', background="yellow", foreground="red")
-
+        self.text.tag_config('constraint', background="#DCE2F1", foreground="black")
+        self.text.tag_config('current', background="#EBEBE4", foreground="black")
         self.button = Button(self, text='Play',width=5,height=2, bg='green', fg='black', command=self.play_agents)
         self.button.pack(side=TOP, padx=5, pady=5)
 
@@ -51,13 +51,14 @@ class Example(Frame):
 
 
 if __name__=="__main__":
-    agents_file=sys.argv[1]
-    map_file=sys.argv[2]
+    # agents_file=sys.argv[1]
+    # map_file=sys.argv[2]
     global Info,the_canvas,the_frame,continuePlay
-    # addagen,addmap="test_25.txt","warehouse-10-20-10-2-1.map.ecbs"
-    addagen,addmap=agents_file,map_file
+    addagen,addmap="test_25.txt","warehouse-10-20-10-2-1.map.ecbs"
+
+    # addagen,addmap=agents_file,map_file
+
     Info=info(addagen,addmap)
-    # the_canvas_width=int(Info.width)
 
     # Construct a simple root window
     the_canvas   = None
