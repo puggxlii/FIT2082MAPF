@@ -27,10 +27,11 @@ class info:
             for i in tmp[:num_agents]:
                 tempt=i.strip('\n')
                 tempt=[i for i in tempt.split(' ') if i[0]=="(" and i[-1]==")" and len(i)>4]
+                # +1 to x and y value otherwise don't match
                 tempt=list(map(lambda x:(int(x[0])+1,int(x[1])+1),list(map(lambda x:x.strip('()').split(','),tempt))))
                 self.agents.append(tempt)
             self.max_agents_length=len(max(self.agents, key=len))
-
+            # print(self.agents)
             tempt=tmp[num_agents].strip('\n')
             tempt=[i for i in tempt.split(' ') if len(i)>12]
             # print([ast.literal_eval(i)[0] for i in tempt])
@@ -47,6 +48,9 @@ class info:
             # print(self.constraint_dict)
             # for value in self.constraint_dict[108]:
             #     print(value[0])
+
+            self.agentsPath=[None]*len(self.agents)
+
         def draw_map(self,canvas):
             self.GridMap=self.Arrmap
             for x in range(len(self.Arrmap[0])):  #165
@@ -71,8 +75,49 @@ class info:
                                                 self.x0 + (self.agents[i][0][1] + 1) * self.a, self.y0 + (self.agents[i][0][0] + 1) * self.a,
                                                 fill='#B45B3E'))
 
+                canvas.tag_bind(self.image[-1], '<Enter>', lambda event,i=i : self.onObjectClick(i,canvas))
 
                 frame.text.insert("end", "Agent "+str(i) + ": "+"("+str(self.agents[i][0][0]-1)+","+str(self.agents[i][0][1]-1)+")"+"\n")
+
+        def linemaker(self,screen_points):
+            """ Function to take list of points and make them into lines
+            """
+            is_first = True
+            # Set up some variables to hold x,y coods
+            x1 = y1 = 0
+            # Grab each pair of points from the input list
+            for (y,x) in screen_points:
+                # If its the first point in a set, set x0,y0 to the values
+                x=x*self.a + self.x0 + 0.5*self.a
+                y=y*self.a + self.y0 + 0.5*self.a
+
+                if is_first:
+                    x1 = x
+                    y1 = y
+                    is_first = False
+                else:
+                    # If its not the fist point yeild previous pair and current pair
+                    yield x1,y1,x,y
+                    # Set current x,y to start coords of next line
+                    x1,y1 = x,y
+
+        def onObjectClick(self, index, canvas):
+
+            list_of_screen_coods = self.agents[index]
+            # print(list_of_screen_coods)
+            if self.agentsPath[index] == None:
+                self.agentsPath[index]=[]
+                for (x1,y1,x2,y2) in self.linemaker(list_of_screen_coods):
+                    # print(str(x1)+" "+str(y1)+" "+str(x2)+" "+str(y2)+" ")
+                    self.agentsPath[index].append(canvas.create_line(x1,y1,x2,y2, width=1,fill="red"))
+                # self.agentsClicked[index] = canvas
+
+            else:
+                for obj in self.agentsPath[index]:
+                    canvas.delete(obj)
+                self.agentsPath[index] = None
+
+
         def move_agents(self,t,canvas,frame,doBackward):
             if doBackward:
                 for i in range(len(self.agents)):
@@ -82,7 +127,7 @@ class info:
                     elif t==len(self.agents[i]):
                         canvas.itemconfig(self.image[i], fill='#B45B3E')
                         #reduce the oval's size once it reaches the destination
-                        #because cosntraint might later generate on it
+                        #because cosntraint might later appear on the same spot
                         x0, y0, x1, y1 = canvas.coords(self.image[i])
                         x0 = x0 - 2
                         x1 = x1 + 2
@@ -131,6 +176,7 @@ class info:
                         print("error?")
                 #return True if no agent is moving
                 return tt
-
+        def display_oval_path(self):
+            pass
 if __name__=="__main__":
     temp=info("test_25.txt","warehouse-10-20-10-2-1.map.ecbs")
