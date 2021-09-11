@@ -89,10 +89,10 @@ class myFrame(Frame):
 if __name__=="__main__":
     agents_file=sys.argv[1]
     map_file=sys.argv[2]
-    global Info,the_canvas,the_frame,continuePlay,t,backward,forward
-    # addagen,addmap="test_25.txt","warehouse-10-20-10-2-1.map.ecbs"
-
     addagen,addmap=agents_file,map_file
+    # addagen,addmap="test_25.txt","warehouse-10-20-10-2-1.map.ecbs"
+    global Info,the_canvas,the_frame,continuePlay,t,backward,forward
+
 
     Info=info(addagen,addmap)
 

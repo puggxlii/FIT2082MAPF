@@ -1,4 +1,5 @@
 import ast
+from collections import defaultdict
 
 class info:
         def __init__(self,addagen,addmap):
@@ -34,17 +35,18 @@ class info:
             tempt=[i for i in tempt.split(' ') if len(i)>12]
             # print([ast.literal_eval(i)[0] for i in tempt])
             cons_loc1=list(map(lambda x:(x[0]+1,x[1]+1),[ast.literal_eval(i)[0] for i in tempt]))
-            # print(self.cons_loc1)
+            # print(cons_loc1)
             cons_loc2=list(map(lambda x:(x[0]+1,x[1]+1),[ast.literal_eval(i)[1] for i in tempt]))
-            # print(self.cons_loc2)
+            # print(cons_loc2)
             cons_time=[ast.literal_eval(i)[2] for i in tempt]
-            # print(self.cons_time)
-
+            # print(cons_time)
             loc_zip = [list(z) for z in zip(cons_loc1, cons_loc2)]
-            zip_iterator = zip(cons_time, loc_zip)
-            self.constraint_dict = dict(zip_iterator)
+            self.constraint_dict = defaultdict(list)
+            for i in range(len(cons_time)):
+                self.constraint_dict[cons_time[i]].append(loc_zip[i])
             # print(self.constraint_dict)
-
+            # for value in self.constraint_dict[108]:
+            #     print(value[0])
         def draw_map(self,canvas):
             self.GridMap=self.Arrmap
             for x in range(len(self.Arrmap[0])):  #165
@@ -94,12 +96,13 @@ class info:
                 frame.text.insert("end","Timestep: "+str(t)+"\n",'current')
 
                 if (t in self.constraint_dict.keys()):
-                    canvas.itemconfig(self.GridMap[self.constraint_dict[t][0][0]][self.constraint_dict[t][0][1]], fill='#0000FF')
-                    #add text description to the frame
-                    frame.text.insert("end", "Constraint time "+str(t) + ":\n"+"("+str(self.constraint_dict[t][0][0]-1)+","+str(self.constraint_dict[t][0][1]-1)+")"+"\n",'constraint')
-                    frame.text.see("end")
-                    if (self.constraint_dict[t][1][0],self.constraint_dict[t][1][1]) != (0,-1):
-                        canvas.itemconfig(self.GridMap[self.constraint_dict[t][1][0]][self.constraint_dict[t][1][1]], fill='#0000FF')
+                    for value in self.constraint_dict[t]:
+                        canvas.itemconfig(self.GridMap[value[0][0]][value[0][1]], fill='#0000FF')
+                        #add text description to the frame
+                        frame.text.insert("end", "Constraint time "+str(t) + ":\n"+"("+str(value[0][0]-1)+","+str(value[0][1]-1)+")"+"\n",'constraint')
+                        frame.text.see("end")
+                        if (value[1][0],value[1][1]) != (0,-1):
+                            canvas.itemconfig(self.GridMap[value[1][0]][value[1][1]], fill='#0000FF')
 
                 for i in range(len(self.agents)):
                     #if still moving.
