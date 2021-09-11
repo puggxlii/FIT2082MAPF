@@ -1,9 +1,9 @@
 # FIT2082MAPF
 
-Built with python tkinter
+Built with python3 tkinter
 
-Run the program by double clicking run.py
-
-Change senarios by replacing: 
-	addagen,addmap="location.txt","warehouse-10-20-10-2-1.map.ecbs" 
-with similar format in run.py
+## Run the program by the command : python run.py [agentsFile.txt] [mapFile.ecbs]
+### Functions
+  • Play/pause the agents
+  • Forward/Backward in time
+  • Click on the agent to see its path on the map, unclick to remove

@@ -87,10 +87,14 @@ class myFrame(Frame):
 
 
 if __name__=="__main__":
-    agents_file=sys.argv[1]
-    map_file=sys.argv[2]
-    addagen,addmap=agents_file,map_file
-    # addagen,addmap="test_25.txt","warehouse-10-20-10-2-1.map.ecbs"
+    try:
+        agents_file=sys.argv[1]
+        map_file=sys.argv[2]
+        addagen,addmap=agents_file,map_file
+    except IndexError:
+        addagen,addmap="test_25.txt","warehouse-10-20-10-2-1.map.ecbs"
+
+
     global Info,the_canvas,the_frame,continuePlay,t,backward,forward
 
 
