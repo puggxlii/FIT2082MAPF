@@ -1,4 +1,5 @@
 import ast
+import time
 from collections import defaultdict
 
 class info:
@@ -21,8 +22,14 @@ class info:
         def read_agent(self):
             for _ in range(15):
                 next(self.fagents)
-            num_agents=int(self.fagents.readline().split()[-1])  ##extract ... upto 25 --> 25
-            # self.fagents.readlines()[:num_agents]
+            cond=False
+            while (cond==False):
+            	time.sleep(1)
+            	try:
+            		num_agents=int(self.fagents.readline().split()[-1])  ##extract ... upto 25 --> 25
+            		cond=True
+            	except:
+            		continue
             tmp=self.fagents.readlines()
             for i in tmp[:num_agents]:
                 tempt=i.strip('\n')
