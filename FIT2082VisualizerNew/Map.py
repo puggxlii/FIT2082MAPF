@@ -1,3 +1,4 @@
+from tkinter import *
 import ast
 import time
 from collections import defaultdict
@@ -59,6 +60,9 @@ class info:
             self.agentsPath=[None]*len(self.agents)
 
         def draw_map(self,canvas):
+            """
+            Function to draw the map on canvas
+            """
             self.GridMap=self.Arrmap
             for x in range(len(self.Arrmap[0])):  #165
                     for y in range(len(self.Arrmap)):   #63
@@ -76,18 +80,39 @@ class info:
                             )
 
         def draw_agents(self,canvas,frame):
+            """
+            Function that draws agent on map.
+            Bind tags to the agent object:
+                self.w Label is with the Frame. Will display the AI number when user hover on it
+                when user click on the agent, display its path. Click again to remove its path.
+            """
+            self.w = Label(frame, text="AI : ")
+            self.w.place(x=0, y=0, anchor="nw")
+            self.w.pack()
+
             frame.text.insert("end","Timestep: 0"+"\n",'current')
             for i in range(len(self.agents)):
                 self.image.append(canvas.create_oval(self.x0 + self.agents[i][0][1] * self.a, self.y0 + self.agents[i][0][0] * self.a,
                                                 self.x0 + (self.agents[i][0][1] + 1) * self.a, self.y0 + (self.agents[i][0][0] + 1) * self.a,
                                                 fill='#B45B3E'))
 
-                canvas.tag_bind(self.image[-1], '<Enter>', lambda event,i=i : self.onObjectClick(i,canvas))
+                canvas.tag_bind(self.image[-1], '<Button-1>', lambda event,i=i : self.onObjectClick(i,canvas))
+                canvas.tag_bind(self.image[-1], '<Enter>', lambda event,i=i : self.on_enter(i))
+
 
                 frame.text.insert("end", "Agent "+str(i) + ": "+"("+str(self.agents[i][0][0]-1)+","+str(self.agents[i][0][1]-1)+")"+"\n")
 
+        def on_enter(self,i):
+            """
+            Function to update the AI number when user hover on the agent
+            """
+            temp="AI : "+str(i)
+            self.w.config(text=temp)
+
+
         def linemaker(self,screen_points):
-            """ Function to take list of points and make them into lines
+            """
+            Function to take list of points and make them into lines
             """
             is_first = True
             # Set up some variables to hold x,y coods
@@ -109,14 +134,16 @@ class info:
                     x1,y1 = x,y
 
         def onObjectClick(self, index, canvas):
-
+            """
+            Function that when user click on the object, display or remove its path.
+            """
             list_of_screen_coods = self.agents[index]
             # print(list_of_screen_coods)
             if self.agentsPath[index] == None:
                 self.agentsPath[index]=[]
                 for (x1,y1,x2,y2) in self.linemaker(list_of_screen_coods):
                     # print(str(x1)+" "+str(y1)+" "+str(x2)+" "+str(y2)+" ")
-                    self.agentsPath[index].append(canvas.create_line(x1,y1,x2,y2, width=1,fill="red"))
+                    self.agentsPath[index].append(canvas.create_line(x1,y1,x2,y2, width=1.5,fill="red"))
                 # self.agentsClicked[index] = canvas
 
             else:
@@ -126,6 +153,9 @@ class info:
 
 
         def move_agents(self,t,canvas,frame,doBackward):
+            """
+            Funciton that move each agents in one timestamp.
+            """
             if doBackward:
                 for i in range(len(self.agents)):
                     #if still moving.
@@ -183,7 +213,6 @@ class info:
                         print("error?")
                 #return True if no agent is moving
                 return tt
-        def display_oval_path(self):
-            pass
+
 if __name__=="__main__":
     temp=info("test_25.txt","warehouse-10-20-10-2-1.map.ecbs")
