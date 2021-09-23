@@ -33,7 +33,7 @@ def repeater(root):
         backward=False
 
         root.update()
-        time.sleep(0.4)
+        time.sleep(0.2)
 
 
 class myFrame(Frame):
@@ -44,42 +44,50 @@ class myFrame(Frame):
         self.text.configure(yscrollcommand=self.vsb.set)
         self.vsb.pack(side="right", fill="y")
         self.text.pack(side="left", fill="both", expand=True)
+
         self.text.tag_config('constraint', background="#DCE2F1", foreground="black")
         self.text.tag_config('current', background="#EBEBE4", foreground="black")
-        self.button = Button(self, text='Play',width=5,height=2, bg='green', fg='black', command=self.play_visualizer)
-        self.button.pack(side=TOP, padx=5, pady=5)
 
-        self.button1 = Button(self, text='<<',width=5,height=2, bg='#EBEBE4', fg='black', command=self.backward)
-        self.button1.pack(side=BOTTOM, padx=5, pady=5)
+        self.playButton = Button(self, text='Pause',width=10,height=3, bg='red', fg='black', command=self.play_visualizer)
+        self.playButton.pack(side=TOP)
 
-        self.button2 = Button(self, text='>>',width=5,height=2, bg='#EBEBE4', fg='black', command=self.forward)
-        self.button2.pack(side=BOTTOM, padx=5, pady=5)
+        self.backButton = Button(self, text='<<',width=8,height=2, bg='#EBEBE4', fg='black', command=self.backward)
+        self.backButton.pack(side=BOTTOM, padx=5, pady=5)
 
+        self.forwardButton = Button(self, text='>>',width=8,height=2, bg='#EBEBE4', fg='black', command=self.forward)
+        self.forwardButton.pack(side=BOTTOM, padx=5, pady=5)
+
+        # self.showhideButton = Button(self, text='Show All Path',width=10,height=3, bg='#EBEBE4', fg='black', command=self.showAllPath)
+        # self.showhideButton.pack()
+
+        # self.ai = Label(self, text="AI : ")
+        # self.ai.place(x=0, y=0, anchor="nw")
+        # self.ai.pack()
 
     def play_visualizer(self):
         global continuePlay,Paused
-        if self.button["text"] == "Play":
-            self.button["text"] = "Pause"
-            self.button["bg"] = "red"
+        if self.playButton["text"] == "Pause":
+            self.playButton["text"] = "Play"
+            self.playButton["bg"] = "green"
             continuePlay=False
 
         else:
-            self.button["text"] = "Play"
-            self.button["bg"] = "green"
+            self.playButton["text"] = "Pause"
+            self.playButton["bg"] = "red"
             continuePlay= True
 
     def backward(self):
         global continuePlay,t,backward,forward
-        self.button["text"] = "Pause"
-        self.button["bg"] = "red"
+        self.playButton["text"] = "Play"
+        self.playButton["bg"] = "green"
         backward=True
         forward=False
         continuePlay=False
 
     def forward(self):
         global continuePlay,t,forward,backward
-        self.button["text"] = "Pause"
-        self.button["bg"] = "red"
+        self.playButton["text"] = "Play"
+        self.playButton["bg"] = "green"
         forward=True
         backward=False
         continuePlay=False

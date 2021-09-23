@@ -86,9 +86,12 @@ class info:
                 self.w Label is with the Frame. Will display the AI number when user hover on it
                 when user click on the agent, display its path. Click again to remove its path.
             """
-            self.w = Label(frame, text="AI : ")
-            self.w.place(x=0, y=0, anchor="nw")
-            self.w.pack()
+            self.showhideButton = Button(frame, text='Show All Path',width=10,height=3, bg='#EBEBE4', fg='black', command=lambda: self.showAllPath(canvas))
+            self.showhideButton.pack()
+
+            self.ai = Label(frame, text="AI : ")
+            self.ai.place(x=0, y=0, anchor="nw")
+            self.ai.pack()
 
             frame.text.insert("end","Timestep: 0"+"\n",'current')
             for i in range(len(self.agents)):
@@ -96,18 +99,44 @@ class info:
                                                 self.x0 + (self.agents[i][0][1] + 1) * self.a, self.y0 + (self.agents[i][0][0] + 1) * self.a,
                                                 fill='#B45B3E'))
 
-                canvas.tag_bind(self.image[-1], '<Button-1>', lambda event,i=i : self.onObjectClick(i,canvas))
-                canvas.tag_bind(self.image[-1], '<Enter>', lambda event,i=i : self.on_enter(i))
+                #when user click on the object, display or remove its path.
+                canvas.tag_bind(self.image[-1], '<Button-1>', lambda event,i=i : self.showPath(i,canvas))
+
+                #update the AI number when user hover on the agent
+                canvas.tag_bind(self.image[-1], '<Enter>', lambda event,i=i : self.checkAIno(i))
 
 
                 frame.text.insert("end", "Agent "+str(i) + ": "+"("+str(self.agents[i][0][0]-1)+","+str(self.agents[i][0][1]-1)+")"+"\n")
 
-        def on_enter(self,i):
+        def showAllPath(self,canvas):
+            if self.showhideButton["text"] == "Show All Path":
+                self.showhideButton["text"] = "Hide All Path"
+                for index in range(len(self.agents)):
+                    if self.agentsPath[index]:
+                        for obj in self.agentsPath[index]:
+                            canvas.delete(obj)
+
+                self.agentsPath=[[] for _ in range(len(self.agents))]
+                for index in range(len(self.agents)):
+                    list_of_screen_coods = self.agents[index]
+                    for (x1,y1,x2,y2) in self.linemaker(list_of_screen_coods):
+                        self.agentsPath[index].append(canvas.create_line(x1,y1,x2,y2, width=1.5,fill="red"))
+                    self.agentsPath[index].append(canvas.create_line(x1,y1,x2,y2, width=1.5,fill="red",arrow=LAST))
+            else:
+                self.showhideButton["text"] = "Show All Path"
+                for index in range(len(self.agents)):
+                    if self.agentsPath[index]:
+                        for obj in self.agentsPath[index]:
+                            canvas.delete(obj)
+                self.agentsPath=[None]*len(self.agents)
+
+
+        def checkAIno(self,i):
             """
             Function to update the AI number when user hover on the agent
             """
             temp="AI : "+str(i)
-            self.w.config(text=temp)
+            self.ai.config(text=temp)
 
 
         def linemaker(self,screen_points):
@@ -122,7 +151,6 @@ class info:
                 # If its the first point in a set, set x0,y0 to the values
                 x=x*self.a + self.x0 + 0.5*self.a
                 y=y*self.a + self.y0 + 0.5*self.a
-
                 if is_first:
                     x1 = x
                     y1 = y
@@ -133,7 +161,7 @@ class info:
                     # Set current x,y to start coords of next line
                     x1,y1 = x,y
 
-        def onObjectClick(self, index, canvas):
+        def showPath(self, index, canvas):
             """
             Function that when user click on the object, display or remove its path.
             """
@@ -144,6 +172,7 @@ class info:
                 for (x1,y1,x2,y2) in self.linemaker(list_of_screen_coods):
                     # print(str(x1)+" "+str(y1)+" "+str(x2)+" "+str(y2)+" ")
                     self.agentsPath[index].append(canvas.create_line(x1,y1,x2,y2, width=1.5,fill="red"))
+                self.agentsPath[index].append(canvas.create_line(x1,y1,x2,y2, width=1.5,fill="red",arrow=LAST))
                 # self.agentsClicked[index] = canvas
 
             else:
@@ -157,10 +186,16 @@ class info:
             Funciton that move each agents in one timestamp.
             """
             if doBackward:
+                frame.text.insert("end","\n")
+                frame.text.insert("end","Timestep: "+str(t-1)+"\n",'current')
+
                 for i in range(len(self.agents)):
                     #if still moving.
                     if 0<t<len(self.agents[i]):
                         canvas.move(self.image[i],(self.agents[i][t-1][1]-self.agents[i][t][1])*self.a,(self.agents[i][t-1][0]-self.agents[i][t][0])* self.a)
+                        #add text description to the frame
+                        frame.text.insert("end", "Agent "+str(i) + ": "+"("+str(self.agents[i][t-1][0]-1)+","+str(self.agents[i][t-1][1]-1)+")"+"\n")
+                        frame.text.see("end")
                     elif t==len(self.agents[i]):
                         canvas.itemconfig(self.image[i], fill='#B45B3E')
                         #reduce the oval's size once it reaches the destination
