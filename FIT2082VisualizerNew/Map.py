@@ -55,15 +55,23 @@ class info:
             # print(cons_loc1)
             cons_loc2=list(map(lambda x:(x[0]+1,x[1]+1),[ast.literal_eval(i)[1] for i in tempt]))
             # print(cons_loc2)
+            cons_agent=[ast.literal_eval(i)[2] for i in tempt]
+            # print(cons_agent)
             cons_time=[ast.literal_eval(i)[3] for i in tempt]
             # print(cons_time)
-            loc_zip = [list(z) for z in zip(cons_loc1, cons_loc2)]
-            self.constraint_dict = defaultdict(list)
+            timeKeyZip = [list(z) for z in zip(cons_loc1, cons_loc2,cons_agent)]
+            # print(timeKeyZip)
+            self.cons_time_dict = defaultdict(list)
             for i in range(len(cons_time)):
-                self.constraint_dict[cons_time[i]].append(loc_zip[i])
-            # print(self.constraint_dict)
-            # for value in self.constraint_dict[108]:
-            #     print(value[0])
+                self.cons_time_dict[cons_time[i]].append(timeKeyZip[i])
+            # print(self.cons_time_dict)
+
+            agentKeyZip = [list(z) for z in zip(cons_loc1, cons_loc2,cons_time)]
+            # print(timeKeyZip)
+            self.cons_agent_dict = defaultdict(list)
+            for i in range(len(cons_agent)):
+                self.cons_agent_dict[cons_agent[i]].append(agentKeyZip[i])
+            # print(self.cons_agent_dict)
             self.agentsPath=[None]*len(self.AgentsPos)
 
         def draw_map(self,canvas):
@@ -137,18 +145,6 @@ class info:
             self.ai.place(x=0, y=0, anchor="nw")
             self.ai.pack()
 
-            # """ Compare Agent """
-            # if frame.newWindow!=None:
-            #     self.inputtxt = Entry(frame.newWindow,width=5)
-            #     self.inputtxt.pack()
-            #
-            #     self.inputtxt1 = Entry(frame.newWindow,width=5)
-            #     self.inputtxt1.pack()
-            #
-            #     """ print out comparison """
-            #     self.printButton = Button(newWindow,text = "see",command = lambda: self.printInput(frame.newWindow,canvas))
-            #     self.printButton.pack()
-
         def zoomIn(self,canvas):
             self.a+=2
             for i in range(len(self.CanvasAgents)):
@@ -188,7 +184,7 @@ class info:
                         y1 = y1 - (y+1)*2
                         canvas.coords(self.CanvasMap[y][x], x0, y0, x1, y1)
 
-        def printInput(self,newFrame,canvas,inputtxt,inputtxt1,textbox):
+        def printInput(self,canvas,inputtxt,inputtxt1,textbox):
                 inp = inputtxt.get()
                 inp1= inputtxt1.get()
 
@@ -217,6 +213,12 @@ class info:
                     textbox.insert("end","\nCheck Agent"+inp+"\n",'constraint')
                     for t in range(len(self.AgentsPos[int(inp)])):
                         temp+="(" + str(self.AgentsPos[int(inp)][t][0] - 1) + "," + str(self.AgentsPos[int(inp)][t][1] - 1) + ")\n"
+                    temp+="Constraint of AI "+inp+" :\n"
+                    if (int(inp) in self.cons_agent_dict.keys()):
+                        # print("what")
+                        for value in self.cons_agent_dict[int(inp)]:
+                            temp+="time: "+str(value[2])+"\npos: "+"("+str(value[0][0]-1)+","+str(value[0][1]-1)+")\n"
+
                     textbox.insert("end",temp,'current')
                 elif inp1.isdigit() and 0<=int(inp1) and int(inp1)<=len(self.AgentsPos)-1:
 
@@ -352,8 +354,8 @@ class info:
                 frame.text.insert("end","\n")
                 frame.text.insert("end","Timestep: "+str(t)+"\n",'current')
 
-                if (t in self.constraint_dict.keys()):
-                    for value in self.constraint_dict[t]:
+                if (t in self.cons_time_dict.keys()):
+                    for value in self.cons_time_dict[t]:
                         canvas.itemconfig(self.CanvasMap[value[0][0]][value[0][1]], fill='#0000FF')
                         #add text description to the frame
                         frame.text.insert("end", "Constraint time "+str(t) + ":\n"+"("+str(value[0][0]-1)+","+str(value[0][1]-1)+")"+"\n",'constraint')
@@ -390,6 +392,6 @@ class info:
                 return tt
 
 if __name__=="__main__":
-    temp=info("test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25)
-    # temp=info("test_2.txt","debug-6-6.map.ecbs",2)
+    # temp=info("test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25)
+    temp=info("test_2.txt","debug-6-6.map.ecbs",2)
 
