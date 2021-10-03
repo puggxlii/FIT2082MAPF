@@ -13,15 +13,15 @@ class myFrame2(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         self.playButton = Button(self, text='Pause',width=10,height=3, bg='red', fg='black', command=self.play_visualizer)
-        self.playButton.grid(row=0, column=0,columnspan=2,pady=(0,10))
+        self.playButton.grid(row=1, column=0,columnspan=2,pady=10)
         self.backButton = Button(self, text='<<',width=5,height=3, bg='white', fg='black', command=self.backward)
-        self.backButton.grid(row=3, column=0,pady=10)
+        self.backButton.grid(row=4, column=0,pady=10)
         self.forwardButton = Button(self, text='>>',width=5,height=3, bg='white', fg='black', command=self.forward)
-        self.forwardButton.grid(row=3, column=1,pady=10)
+        self.forwardButton.grid(row=4, column=1,pady=10)
         self.speedUpButton=Button(self, text='<<<',width=5,height=3, bg='white', fg='black', command=lambda:self.speedChange(0.05))
-        self.speedUpButton.grid(row=4, column=0,pady=10)
+        self.speedUpButton.grid(row=5, column=0,pady=10)
         self.speedDownButton=Button(self, text='>>>',width=5,height=3, bg='white', fg='black', command=lambda:self.speedChange(-0.05))
-        self.speedDownButton.grid(row=4, column=1,pady=10)
+        self.speedDownButton.grid(row=5, column=1,pady=10)
     """speed up or down"""
     def speedChange(self,change):
         global speedup
@@ -94,26 +94,8 @@ class myFrame(Frame):
 
         self.text.tag_config('constraint', background="#DCE2F1", foreground="black")
         self.text.tag_config('current', background="#EBEBE4", foreground="black")
-
-        # self.playButton = Button(self, text='Pause',width=10,height=3, bg='red', fg='black', command=self.play_visualizer)
-        # self.playButton.pack(fill=X,pady=10)
-        #
-        # self.backButton = Button(self, text='<<',width=5,height=2, bg='#EBEBE4', fg='black', command=self.backward)
-        # self.backButton.pack(side=BOTTOM,pady=10)
-        # self.forwardButton = Button(self, text='>>',width=5,height=2, bg='#EBEBE4', fg='black', command=self.forward)
-        # self.forwardButton.pack(side=BOTTOM,pady=10)
-        #
-        # self.speedUpButton=Button(self, text='<<<',width=8,height=2, bg='#EBEBE4', fg='black', command=lambda:self.speedChange(0.05))
-        # self.speedUpButton.pack(side=BOTTOM, pady=5)
-        # self.speedDownButton=Button(self, text='>>>',width=8,height=2, bg='#EBEBE4', fg='black', command=lambda:self.speedChange(-0.05))
-        # self.speedDownButton.pack(side=BOTTOM, pady=5)
         """"""
 
-    # """speed up or down"""
-    # def speedChange(self,change):
-    #     global speedup
-    #     speedup=max(0.001,speedup+change)
-    # """"""
     """drag function"""
     def move_start(self, event):
         self.canvas.scan_mark(event.x, event.y)
@@ -133,58 +115,27 @@ class myFrame(Frame):
         self.canvas.configure(scrollregion = self.canvas.bbox("all"))
     """"""
 
-    # def play_visualizer(self):
-    #     global continuePlay,Paused
-    #     if self.playButton["text"] == "Pause":
-    #         self.playButton["text"] = "Play"
-    #         self.playButton["bg"] = "green"
-    #         continuePlay=False
-    #
-    #     else:
-    #         self.playButton["text"] = "Pause"
-    #         self.playButton["bg"] = "red"
-    #         continuePlay= True
-    #
-    # def backward(self):
-    #     global continuePlay,t,backward,forward
-    #     self.playButton["text"] = "Play"
-    #     self.playButton["bg"] = "green"
-    #     backward=True
-    #     forward=False
-    #     continuePlay=False
-    #
-    # def forward(self):
-    #     global continuePlay,t,forward,backward
-    #     self.playButton["text"] = "Play"
-    #     self.playButton["bg"] = "green"
-    #     forward=True
-    #     backward=False
-    #     continuePlay=False
-
     """open new window to display the Agent Detail"""
     def openNewWindow(self):
         self.newWindow = Toplevel(root)
         self.newWindow.title("Inspect AI")
-        self.newWindow.geometry("400x700")
+        self.newWindow.geometry("450x700")
 
         self.newframe = Frame(self.newWindow)
         self.newframe.place(x=10, y=20)
 
-        self.t = Text(self.newframe, width=20)
+        self.t = Text(self.newframe, width=40)
         self.scrollbar = Scrollbar(self.newframe,orient="vertical", command=self.t.yview)
         self.t.configure(yscrollcommand=self.vsb.set)
         self.scrollbar.pack(side=RIGHT, fill=Y)
-        self.t.pack(side="left")
+        self.t.pack(side="left",fill=BOTH,expand=True)
 
-        self.inputtxt = Entry(self.newWindow,width=5)
+        self.inputtxt = Entry(self.newframe,width=20)
         self.inputtxt.pack()
 
-        self.inputtxt1 = Entry(self.newWindow,width=5)
-        self.inputtxt1.pack()
-
         """ print out comparison """
-        self.printButton = Button(self.newWindow,text = "see",
-                 command = lambda: Info.printInput(the_canvas,self.inputtxt,self.inputtxt1,self.t))
+        self.printButton = Button(self.newframe, text = "inspect",
+                                  command = lambda: Info.displayAIDetail(the_canvas, self.inputtxt, self.t))
         self.printButton.pack()
     """"""
 
@@ -227,8 +178,8 @@ if __name__=="__main__":
         addmap=sys.argv[2]
         numAgent=int(sys.argv[3])
     except IndexError:
-        addagen,addmap,numAgent="test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25
-        # addagen,addmap,numAgent="test_2.txt","debug-6-6.map.ecbs",2
+        # addagen,addmap,numAgent="test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25
+        addagen,addmap,numAgent="test_2.txt","debug-6-6.map.ecbs",2
 
     # addagen=init("../maps/debug-6-6.map.ecbs", "../scenarios/debug-6-6-2-2.scen", 2, [(0, ((-1, -2), (-1, -2)), -2, -100)])
     # with open("agentPath.txt","w") as text_file:

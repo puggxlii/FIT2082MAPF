@@ -124,22 +124,26 @@ class info:
 
         def initialize_frame(self,frame,canvas):
 
+            self.currentTimeLabel = Label(frame, text="Time: ",font=("Arial", 16))
+            self.currentTimeLabel.grid(row=0, column=0,columnspan=2,pady=(0,10))
+
             """ show/hide all path """
             self.showhideButton = Button(frame, text='Show All Path',width=10,height=3, bg='white', fg='black', command=lambda: self.showAllPath(canvas))
-            self.showhideButton.grid(row=1, column=0,columnspan=2,pady=10)
+            self.showhideButton.grid(row=2, column=0,columnspan=2,pady=10)
             myFont = font.Font(size=10)
 
             self.zoomInButton = Button(frame, text='+',width=5,height=3, bg='white', fg='black', command=lambda: self.zoomIn(canvas))
             self.zoomInButton['font'] = myFont
 
-            self.zoomInButton.grid(row=5, column=0,pady=10)
+            self.zoomInButton.grid(row=6, column=0,pady=10)
             self.zoomOutButton = Button(frame, text='-',width=5,height=3, bg='white', fg='black', command=lambda: self.zoomOut(canvas))
             self.zoomOutButton['font'] = myFont
-            self.zoomOutButton.grid(row=5, column=1,pady=10)
+            self.zoomOutButton.grid(row=6, column=1,pady=10)
 
             """ check agent No """
             self.ai = Label(frame, text="AI : ")
-            self.ai.grid(row=2, column=0,columnspan=2)
+            self.ai.grid(row=3, column=0,columnspan=2)
+
         def zoomIn(self,canvas):
             self.a+=2
             for i in range(len(self.CanvasAgents)):
@@ -179,51 +183,49 @@ class info:
                         y1 = y1 - (y+1)*2
                         canvas.coords(self.CanvasMap[y][x], x0, y0, x1, y1)
 
-        def printInput(self,canvas,inputtxt,inputtxt1,textbox):
-                inp = inputtxt.get()
-                inp1= inputtxt1.get()
+        def displayAIDetail(self, canvas, inputtxt, textbox):
+                textbox.delete('1.0', END)
+                inp1 = inputtxt.get()
+                try:
+                    inputList=[int(i) for i in inp1.split(",") if (0<=int(i) and int(i)<len(self.AgentsPos))]
+                except ValueError:
+                    print("must be integer seperated by comma, eg. 0,3,4")
+                    return
+                maxlen=0
+                for inp in inputList: #agent 4 6
+                    self.showPath(inp,canvas,True)
+                    maxlen=max(maxlen,len(self.AgentsPos[inp]))
+                # print(maxlen)
 
-                if inp.isdigit() and 0<=int(inp) and int(inp)<=len(self.AgentsPos)-1 and inp1.isdigit() and 0<=int(inp1) and int(inp1)<=len(self.AgentsPos)-1:
+                tmpArrayList=[]
+                temp="Compare AI "
+                for inp in inputList:
+                    temp+=str(inp)+","
+                    tmpArray=self.AgentsPos[inp]
+                    if len(tmpArray)<maxlen:
+                        tmpArray+=[tmpArray[-1]]*(maxlen-len(tmpArray))
+                    tmpArrayList.append(tmpArray)
+                textbox.insert("end",temp+"\n")
 
-                    self.showPath(int(inp),canvas,True)
-                    self.showPath(int(inp1),canvas,True)
-
+                for tt in range(len(tmpArrayList[0])):
                     temp=""
-                    array1=self.AgentsPos[int(inp)]
-                    array2=self.AgentsPos[int(inp1)]
-                    if len(array1)<len(array2):
-                        array1+=[array1[-1]]*(len(array2)-len(array1))
-                    else:
-                        array2+=[array2[-1]]*(len(array1)-len(array2))
-                    textbox.insert("end","\nCompare AI "+inp+" and "+inp1+"\n",'constraint')
-                    for t in range((len(array1))):
-                        temp+=str(t)+":("+str(array1[t][0]-1)+","+str(array1[t][1]-1)+") ("+\
-                              str(array2[t][0]-1)+","+str(array2[t][1]-1)+")\n"
+                    # print(tt)
+                    temp+=str(tt)+":"
+                    for numAI in range(len(tmpArrayList)):
+                        temp+="("+str(tmpArrayList[numAI][tt][0]-1)+","+str(tmpArrayList[numAI][tt][1]-1)+")\t"
+
+                    temp+="\n"
                     textbox.insert("end",temp,'current')
-                elif inp.isdigit() and 0<=int(inp) and int(inp)<=len(self.AgentsPos)-1:
 
-                    self.showPath(int(inp),canvas,True)
-
-                    temp=""
-                    textbox.insert("end","\nCheck Agent"+inp+"\n",'constraint')
-                    for t in range(len(self.AgentsPos[int(inp)])):
-                        temp+="(" + str(self.AgentsPos[int(inp)][t][0] - 1) + "," + str(self.AgentsPos[int(inp)][t][1] - 1) + ")\n"
-                    temp+="Constraint of AI "+inp+" :\n"
-                    if (int(inp) in self.cons_agent_dict.keys()):
+                temp=""
+                for agent in inputList:
+                    temp+="Constraint of AI "+str(agent)+" :\n"
+                    if (agent in self.cons_agent_dict.keys()):
                         # print("what")
-                        for value in self.cons_agent_dict[int(inp)]:
+                        for value in self.cons_agent_dict[agent]:
                             temp+="time: "+str(value[2])+"\npos: "+"("+str(value[0][0]-1)+","+str(value[0][1]-1)+")\n"
+                textbox.insert("end",temp,'current')
 
-                    textbox.insert("end",temp,'current')
-                elif inp1.isdigit() and 0<=int(inp1) and int(inp1)<=len(self.AgentsPos)-1:
-
-                    self.showPath(int(inp1),canvas,True)
-
-                    temp1=""
-                    textbox.insert("end","\nCheck Agent"+inp1+"\n",'constraint')
-                    for t in range(len(self.AgentsPos[int(inp1)])):
-                        temp1+="(" + str(self.AgentsPos[int(inp1)][t][0] - 1) + "," + str(self.AgentsPos[int(inp1)][t][1] - 1) + ")\n"
-                    textbox.insert("end",temp1,'current')
                 textbox.see("end")
 
         def showAllPath(self,canvas):
@@ -322,6 +324,12 @@ class info:
             """
             self.currentTime=t  #this is for zoom in and zoom out
             if doBackward:
+                self.currentTime=t-1
+
+            tmp="Time: "+str(self.currentTime)
+            self.currentTimeLabel.config(text=tmp)
+
+            if doBackward:
                 """must t-1, otherwise magic happen"""
                 self.currentTime=t-1
                 frame.text.insert("end","\n")
@@ -386,7 +394,13 @@ class info:
                 #return True if no agent is moving
                 return tt
 
+
 if __name__=="__main__":
     # temp=info("test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25)
-    temp=info("test_2.txt","debug-6-6.map.ecbs",2)
-
+    # temp=info("test_2.txt","debug-6-6.map.ecbs",2)
+    try:
+        x="#314,3,4"
+        print([int(i) for i in x.split(",")])
+    except ValueError:
+        print("??")
+        print(max([2,4,6,8]))
