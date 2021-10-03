@@ -27,8 +27,6 @@ class info:
             self.a=(len(self.BinaryMap[0])-201.75)/(-155/40)
             # print(self.a)
         def read_agent(self):
-            # for _ in range(15):
-            #     next(self.fagents)
             tmp=self.fagents.readlines()
             for i, line in enumerate(tmp):
                 if "Agent 0" in line:
@@ -100,14 +98,14 @@ class info:
                             canvas.tag_bind(self.CanvasMap[y][x], '<Button-1>', lambda event, i=self.AgentsEndPos.index((y, x)) : self.showPath(i, canvas))
                             canvas.tag_bind(self.CanvasMap[y][x], '<Enter>', lambda event, i=self.AgentsEndPos.index((y, x)) : self.checkAIno(i))
 
-        def draw_agents(self,canvas,frame):
+        def draw_agents(self,canvas,frame,frame2):
             """
             Function that draws agent on map.
             Bind tags to the agent object:
                 self.w Label is with the Frame. Will display the AI number when user hover on it
                 when user click on the agent, display its path. Click again to remove its path.
             """
-            self.initialize_frame(frame,canvas)
+            self.initialize_frame(frame2,canvas)
 
             frame.text.insert("end","Timestep: 0"+"\n",'current')
             for i in range(len(self.AgentsPos)):
@@ -127,24 +125,21 @@ class info:
         def initialize_frame(self,frame,canvas):
 
             """ show/hide all path """
-            self.showhideButton = Button(frame, text='Show All Path',width=10,height=3, bg='#EBEBE4', fg='black', command=lambda: self.showAllPath(canvas))
-            self.showhideButton.pack()
+            self.showhideButton = Button(frame, text='Show All Path',width=10,height=3, bg='white', fg='black', command=lambda: self.showAllPath(canvas))
+            self.showhideButton.grid(row=1, column=0,columnspan=2,pady=10)
+            myFont = font.Font(size=10)
 
-            myFont = font.Font(size=20)
-
-            self.zoomInButton = Button(frame, text='+',width=5,height=2, bg='#EBEBE4', fg='black', command=lambda: self.zoomIn(canvas))
+            self.zoomInButton = Button(frame, text='+',width=5,height=3, bg='white', fg='black', command=lambda: self.zoomIn(canvas))
             self.zoomInButton['font'] = myFont
-            self.zoomInButton.pack()
 
-            self.zoomOutButton = Button(frame, text='-',width=5,height=2, bg='#EBEBE4', fg='black', command=lambda: self.zoomOut(canvas))
+            self.zoomInButton.grid(row=5, column=0,pady=10)
+            self.zoomOutButton = Button(frame, text='-',width=5,height=3, bg='white', fg='black', command=lambda: self.zoomOut(canvas))
             self.zoomOutButton['font'] = myFont
-            self.zoomOutButton.pack()
+            self.zoomOutButton.grid(row=5, column=1,pady=10)
 
             """ check agent No """
             self.ai = Label(frame, text="AI : ")
-            self.ai.place(x=0, y=0, anchor="nw")
-            self.ai.pack()
-
+            self.ai.grid(row=2, column=0,columnspan=2)
         def zoomIn(self,canvas):
             self.a+=2
             for i in range(len(self.CanvasAgents)):
