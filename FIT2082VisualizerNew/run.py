@@ -1,5 +1,5 @@
 import sys
-#from lazycbs import init
+# from lazycbs import init
 
 from tkinter import *
 from Map import info
@@ -8,7 +8,7 @@ import time
 class MyCanvas(Canvas):
     def __init__(self,parent,**kwargs):
         Canvas.__init__(self,parent,**kwargs)
-
+"""button on the right hand side"""
 class myFrame2(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
@@ -22,6 +22,8 @@ class myFrame2(Frame):
         self.speedUpButton.grid(row=5, column=0,pady=10)
         self.speedDownButton=Button(self, text='>>>',width=5,height=3, bg='white', fg='black', command=lambda:self.speedChange(-0.05))
         self.speedDownButton.grid(row=5, column=1,pady=10)
+
+
     """speed up or down"""
     def speedChange(self,change):
         global speedup
@@ -55,6 +57,7 @@ class myFrame2(Frame):
         backward=False
         continuePlay=False
 
+"""text bar and menu to create new window and new frame inside"""
 class myFrame(Frame):
     def __init__(self, master,canvas):
         Frame.__init__(self, master)
@@ -95,7 +98,7 @@ class myFrame(Frame):
         self.text.tag_config('constraint', background="#DCE2F1", foreground="black")
         self.text.tag_config('current', background="#EBEBE4", foreground="black")
         """"""
-
+        self.newWindow=None
     """drag function"""
     def move_start(self, event):
         self.canvas.scan_mark(event.x, event.y)
@@ -117,26 +120,38 @@ class myFrame(Frame):
 
     """open new window to display the Agent Detail"""
     def openNewWindow(self):
-        self.newWindow = Toplevel(root)
-        self.newWindow.title("Inspect AI")
-        self.newWindow.geometry("450x700")
+        if (self.newWindow==None):
+            self.newWindow = Toplevel(root)
+            self.newWindow.title("Inspect AI")
+            self.newWindow.geometry("650x700")
+            self.newWindow.protocol("WM_DELETE_WINDOW",exit)
 
-        self.newframe = Frame(self.newWindow)
-        self.newframe.place(x=10, y=20)
+            self.newframe = Frame(self.newWindow)
+            self.newframe.place(x=10, y=20)
 
-        self.t = Text(self.newframe, width=40)
-        self.scrollbar = Scrollbar(self.newframe,orient="vertical", command=self.t.yview)
-        self.t.configure(yscrollcommand=self.vsb.set)
-        self.scrollbar.pack(side=RIGHT, fill=Y)
-        self.t.pack(side="left",fill=BOTH,expand=True)
+            self.t = Text(self.newframe, width=60)
+            self.scrollbar = Scrollbar(self.newframe,orient="vertical", command=self.t.yview)
+            self.t.configure(yscrollcommand=self.vsb.set)
+            self.scrollbar.pack(side=RIGHT, fill=Y)
+            self.t.pack(side="left",fill=BOTH,expand=True)
 
-        self.inputtxt = Entry(self.newframe,width=20)
-        self.inputtxt.pack()
+            self.inputtxt = Entry(self.newframe,width=20)
+            self.inputtxt.pack()
 
-        """ print out comparison """
-        self.printButton = Button(self.newframe, text = "inspect",
-                                  command = lambda: Info.displayAIDetail(the_canvas, self.inputtxt, self.t))
-        self.printButton.pack()
+            """ print out comparison """
+            self.printButton = Button(self.newframe, text = "inspect",
+                                      command = lambda: Info.displayAIDetail(the_canvas, self.inputtxt, self.t))
+            self.printButton.pack()
+            self.exitButton = Button(self.newframe, text="Exit", highlightbackground="#56B426", command=self.destroy)
+            self.exitButton.pack()
+    def destroy(self):
+        tw = self.newWindow
+        self.newWindow = None
+        if tw:
+            list = tw.grid_slaves()
+            for l in list:
+                l.destroy()
+            tw.destroy()
     """"""
 
 def repeater(root):
@@ -178,8 +193,8 @@ if __name__=="__main__":
         addmap=sys.argv[2]
         numAgent=int(sys.argv[3])
     except IndexError:
-        # addagen,addmap,numAgent="test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25
-        addagen,addmap,numAgent="test_2.txt","debug-6-6.map.ecbs",2
+        addagen,addmap,numAgent="test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25
+        # addagen,addmap,numAgent="test_2.txt","debug-6-6.map.ecbs",2
 
     # addagen=init("../maps/debug-6-6.map.ecbs", "../scenarios/debug-6-6-2-2.scen", 2, [(0, ((-1, -2), (-1, -2)), -2, -100)])
     # with open("agentPath.txt","w") as text_file:
@@ -194,12 +209,12 @@ if __name__=="__main__":
     # Construct a simple root window
     root = Tk()
 
-    continuePlay,backward,forward,speedup = True,False,False,0.2
+    continuePlay,backward,forward,speedup = True,False,False,0.1
 
     root.title("Lazycbs Visualizer")
     # root.protocol("WM_DELETE_WINDOW",exit)
 
-    the_canvas= MyCanvas(root,width=1630,height=720,bg="#d1d1d1")
+    the_canvas= MyCanvas(root,width=1600,height=720,bg="#d1d1d1")
     the_canvas.pack(side=LEFT,expand=True,fill=BOTH)
 
     the_frame2 = myFrame2(root)
