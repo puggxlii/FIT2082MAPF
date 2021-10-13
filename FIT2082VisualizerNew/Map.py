@@ -47,7 +47,7 @@ class info:
                 self.AgentsPos.append(tempt)
                 self.AgentsEndPos.append(tempt[-1])
                 """-1 or not?"""
-                self.AgentCost.append(len(tempt))
+                self.AgentCost.append(len(tempt)-1)
                 for ttt in range(len(tempt)):
                     self.stuffMap[tempt[ttt][0]][tempt[ttt][1]]+="Agent: "+str(j)+" t: "+str(ttt)+'\n'
 
@@ -58,9 +58,9 @@ class info:
             # print([ast.literal_eval(i)[0] for i in tempt])
             # print([ast.literal_eval(i)[1] for i in tempt])
             cons_loc1=list(map(lambda x:(x[0]+1,x[1]+1),[ast.literal_eval(i)[0] for i in tempt]))
-            print(cons_loc1)
+            # print(cons_loc1)
             cons_loc2=list(map(lambda x:(x[0]+1,x[1]+1),[ast.literal_eval(i)[1] for i in tempt]))
-            print(cons_loc2)
+            # print(cons_loc2)
             cons_agent=[ast.literal_eval(i)[2] for i in tempt]
             # print(cons_agent)
             cons_time=[ast.literal_eval(i)[3] for i in tempt]
@@ -340,9 +340,11 @@ class info:
             """
             Function to update the AI number when user hover on the agent
             """
-            time=self.currentTime
+            
+            time=min(self.currentTime,len(self.AgentsPos[i])-1)
             temp="AI: "+str(i)+"\nObj Cost: "+str(self.AgentCost[i])
             self.ai.config(text=temp)
+            
             x,y=self.AgentsPos[i][time]
             self.blabla1(y,x,canvas)
 

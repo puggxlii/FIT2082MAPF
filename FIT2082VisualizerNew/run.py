@@ -253,8 +253,8 @@ if __name__=="__main__":
         addmap=sys.argv[2]
         numAgent=int(sys.argv[3])
     except IndexError:
-        addagen,addmap,numAgent="test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25
-        # addagen,addmap,numAgent="test_2.txt","debug-6-6.map.ecbs",2
+        # addagen,addmap,numAgent="test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25
+        addagen,addmap,numAgent="test_2.txt","debug-6-6.map.ecbs",2
 
     # addagen=init("../maps/debug-6-6.map.ecbs", "../scenarios/debug-6-6-2-2.scen", 2, [(0, ((-1, -2), (-1, -2)), -2, -100)])
     # with open("agentPath.txt","w") as text_file:
