@@ -84,8 +84,9 @@ class myFrame(Frame):
         self.master.config(menu=menu)
 
         fileMenu = Menu(menu)
-        fileMenu.add_command(label="Agent Detail",command=self.openNewWindow)
-        menu.add_cascade(label="More", menu=fileMenu)
+        fileMenu.add_command(label="Agent Detail",command=self.openNewWindow1)
+        fileMenu.add_command(label="Ask Questions",command=self.openNewWindow2)
+        menu.add_cascade(label="More Functions", menu=fileMenu)
         """"""
 
         """setup text box, button in main frame"""
@@ -98,7 +99,8 @@ class myFrame(Frame):
         self.text.tag_config('constraint', background="#DCE2F1", foreground="black")
         self.text.tag_config('current', background="#EBEBE4", foreground="black")
         """"""
-        self.newWindow=None
+        self.newWindow1=None
+        self.newWindow2=None
     """drag function"""
     def move_start(self, event):
         self.canvas.scan_mark(event.x, event.y)
@@ -119,14 +121,14 @@ class myFrame(Frame):
     """"""
 
     """open new window to display the Agent Detail"""
-    def openNewWindow(self):
-        if (self.newWindow==None):
-            self.newWindow = Toplevel(root)
-            self.newWindow.title("Inspect AI")
-            self.newWindow.geometry("650x700")
-            self.newWindow.protocol("WM_DELETE_WINDOW",exit)
+    def openNewWindow1(self):
+        if (self.newWindow1==None):
+            self.newWindow1 = Toplevel(root)
+            self.newWindow1.title("Inspect AI")
+            self.newWindow1.geometry("650x700")
+            self.newWindow1.protocol("WM_DELETE_WINDOW", exit)
 
-            self.newframe = Frame(self.newWindow)
+            self.newframe = Frame(self.newWindow1)
             self.newframe.place(x=10, y=20)
 
             self.t = Text(self.newframe, width=60)
@@ -142,18 +144,76 @@ class myFrame(Frame):
             self.printButton = Button(self.newframe, text = "inspect",
                                       command = lambda: Info.displayAIDetail(the_canvas, self.inputtxt, self.t))
             self.printButton.pack()
-            self.exitButton = Button(self.newframe, text="Exit", highlightbackground="#56B426", command=self.destroy)
+            self.exitButton = Button(self.newframe, text="Exit", highlightbackground="#56B426", command=self.destroy1)
             self.exitButton.pack()
-    def destroy(self):
-        tw = self.newWindow
-        self.newWindow = None
+    def destroy1(self):
+        tw = self.newWindow1
+        self.newWindow1 = None
         if tw:
             list = tw.grid_slaves()
             for l in list:
                 l.destroy()
             tw.destroy()
     """"""
+    def openNewWindow2(self):
+        if (self.newWindow2==None):
+            self.newWindow2 = Toplevel(root)
+            self.newWindow2.title("Run Model")
+            self.newWindow2.geometry("650x700")
+            self.newWindow2.protocol("WM_DELETE_WINDOW", exit)
 
+            self.newframe2 = Frame(self.newWindow2)
+            self.newframe2.place(x=10, y=20)
+
+            self.t2 = Text(self.newframe2, width=60)
+            self.scrollbar2 = Scrollbar(self.newframe2,orient="vertical", command=self.t2.yview)
+            self.t2.configure(yscrollcommand=self.vsb.set)
+            self.scrollbar2.pack(side=RIGHT, fill=Y)
+            self.t2.pack(side="left",fill=BOTH,expand=True)
+
+            self.agent = Entry(self.newframe2,width=10)
+            self.agent.pack()
+
+            self.location1 = Entry(self.newframe2,width=10)
+            self.location1.pack()
+
+            self.location2 = Entry(self.newframe2,width=10)
+            self.location2.pack()
+
+            self.time = Entry(self.newframe2,width=10)
+            self.time.pack()
+
+            self.cost = Entry(self.newframe2,width=10)
+            self.cost.pack()
+            """ print out comparison """
+            self.printButton2 = Button(self.newframe2, text = "run!",
+                                      command = lambda: self.runModel(self.agent,self.location1, self.location2, self.time, self.cost,self.t2))
+            self.printButton2.pack()
+            self.exitButton2 = Button(self.newframe2, text="Exit", highlightbackground="#56B426", command=self.destroy2)
+            self.exitButton2.pack()
+    def runModel(self,ai,loc1,loc2,time,cost,textbox):
+        textbox.delete('1.0', END)
+        try:
+            ai = int(ai.get())
+            loc1a,loc1b = int(loc1.get().split(',')[0]),int(loc1.get().split(',')[1])
+            loc2a,loc2b = int(loc2.get().split(',')[0]),int(loc2.get().split(',')[1])
+            time = int(time.get())
+            cost = int(cost.get())
+            print(loc1a,loc1b,time)
+        except ValueError:
+            print("typo error(s)")
+            return
+        # temp=init("../maps/debug-6-6.map.ecbs", "../scenarios/debug-6-6-2-2.scen", 2, [(0, ((-1, -2), (-1, -2)), -2, -100)])
+        # textbox.insert("end",temp,'current')
+        textbox.see("end")
+    def destroy2(self):
+        tw = self.newWindow2
+        self.newWindow2 = None
+        if tw:
+            list = tw.grid_slaves()
+            for l in list:
+                l.destroy()
+            tw.destroy()
 def repeater(root):
     global backward,forward,speedup
     t=1

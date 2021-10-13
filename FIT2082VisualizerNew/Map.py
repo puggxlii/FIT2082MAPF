@@ -11,6 +11,7 @@ class info:
             self.numAgent=numAgent
             self.a=50
             self.x0,self.y0=0,0
+            self.currentTime=-1
             self.BinaryMap=[]
             self.CanvasMap=[]
             self.read_map()
@@ -20,6 +21,7 @@ class info:
             self.CanvasAgents=[]
             self.max_agents_length=0
             self.read_agent()
+
         def read_map(self):
             self.fmap.readline()
             for i in self.fmap:  #iterate each line in fmap
@@ -35,15 +37,19 @@ class info:
 
             tmp = tmp[i:]
 
-            for i in tmp[:self.numAgent]:
-                tempt=i.strip('\n')
+            self.stuffMap=[['' for x in range(len(self.BinaryMap[0]))] for _ in range(len(self.BinaryMap))]
+
+            for j in range(len(tmp[:self.numAgent])):
+                tempt=tmp[:self.numAgent][j].strip('\n')
                 tempt=[i for i in tempt.split(' ') if i[0]=="(" and i[-1]==")" and len(i)>4]
-                # +1 to x and y valself.agentsEndPointue otherwise don't match
+                # +1 to x and y value otherwise don't match
                 tempt=list(map(lambda x:(int(x[0])+1,int(x[1])+1),list(map(lambda x:x.strip('()').split(','),tempt))))
                 self.AgentsPos.append(tempt)
                 self.AgentsEndPos.append(tempt[-1])
                 """-1 or not?"""
                 self.AgentCost.append(len(tempt))
+                for ttt in range(len(tempt)):
+                    self.stuffMap[tempt[ttt][0]][tempt[ttt][1]]+="Agent: "+str(j)+" t: "+str(ttt)+'\n'
 
             self.max_agents_length=len(max(self.AgentsPos, key=len))
             """store constraint"""
@@ -52,9 +58,9 @@ class info:
             # print([ast.literal_eval(i)[0] for i in tempt])
             # print([ast.literal_eval(i)[1] for i in tempt])
             cons_loc1=list(map(lambda x:(x[0]+1,x[1]+1),[ast.literal_eval(i)[0] for i in tempt]))
-            # print(cons_loc1)
+            print(cons_loc1)
             cons_loc2=list(map(lambda x:(x[0]+1,x[1]+1),[ast.literal_eval(i)[1] for i in tempt]))
-            # print(cons_loc2)
+            print(cons_loc2)
             cons_agent=[ast.literal_eval(i)[2] for i in tempt]
             # print(cons_agent)
             cons_time=[ast.literal_eval(i)[3] for i in tempt]
@@ -66,6 +72,12 @@ class info:
                 self.cons_time_dict[cons_time[i]].append(timeKeyZip[i])
             # print(self.cons_time_dict)
 
+            for k,v in self.cons_time_dict.items():
+                for tt in v:
+                    self.stuffMap[tt[0][0]][tt[0][1]]+="Agent: "+str(tt[2])+" t: "+str(k)+'(Constraint)\n'
+                    if (tt[1]!=(0,-1)):
+                        self.stuffMap[tt[1][0]][tt[1][1]]+="Agent: "+str(tt[2])+" t: "+str(k)+'(Constraint)\n'
+
             agentKeyZip = [list(z) for z in zip(cons_loc1, cons_loc2,cons_time)]
             # print(timeKeyZip)
             self.cons_agent_dict = defaultdict(list)
@@ -73,6 +85,9 @@ class info:
                 self.cons_agent_dict[cons_agent[i]].append(agentKeyZip[i])
             # print(self.cons_agent_dict)
             self.agentsPath=[None]*len(self.AgentsPos)
+
+
+            # print(self.stuffMap)
 
         def draw_map(self,canvas):
             """
@@ -96,8 +111,7 @@ class info:
                             )
                         if (y,x) in self.AgentsEndPos:
                             canvas.itemconfig(self.CanvasMap[y][x], fill='#FFC0CB')  #fill end point with pink color
-                            # hover on dest to display AI(not necessary)
-                            # canvas.tag_bind(self.CanvasMap[y][x], '<Enter>', lambda event, i=self.AgentsEndPos.index((y, x)) : self.checkAIno(i))
+
                         #when user click on the object, display or remove its path.
                         canvas.tag_bind(self.CanvasMap[y][x], '<Button-1>', lambda event, x=x,y=y : self.blabla(x,y, canvas))
                         canvas.tag_bind(self.CanvasMap[y][x], '<Enter>', lambda event, x=x,y=y : self.blabla1(x,y, canvas))
@@ -117,7 +131,10 @@ class info:
 
             tw.wm_overrideredirect(1)
             tw.wm_geometry("+%d+%d" % (x1,y1))
-            txt=str(y)+","+str(x)
+            txt=str(y)+","+str(x)+"\n"+self.stuffMap[y][x]
+            """"""
+
+
             label = Label(tw, text=txt, justify=LEFT,
                           background="#ffffe0", relief=SOLID, borderwidth=1,
                           font=("tahoma", "8", "normal"))
@@ -127,7 +144,6 @@ class info:
             self.tipwindow = None
             if tw:
                 tw.destroy()
-
         def draw_agents(self,canvas,frame,frame2):
             """
             Function that draws agent on map.
@@ -147,9 +163,8 @@ class info:
                 canvas.tag_bind(self.CanvasAgents[-1], '<Button-1>', lambda event, i=i : self.showPath(i, canvas))
 
                 #update the AI number when user hover on the agent
-                canvas.tag_bind(self.CanvasAgents[-1], '<Enter>', lambda event, i=i : self.checkAIno(i))
-
-
+                canvas.tag_bind(self.CanvasAgents[-1], '<Enter>', lambda event, i=i : self.checkAIno(i,canvas))
+                canvas.tag_bind(self.CanvasAgents[-1], '<Leave>', lambda event: self.blabla2())
                 frame.text.insert("end", "Agent " + str(i) + ": " +"(" + str(self.AgentsPos[i][0][0] - 1) + "," + str(self.AgentsPos[i][0][1] - 1) + ")" + "\n")
 
         def initialize_frame(self,frame,canvas):
@@ -260,9 +275,6 @@ class info:
                 for inp in inputList: #agent 4 6
                     self.showPath(inp,canvas,True)
                     maxlen=max(maxlen,len(self.AgentsPos[inp]))
-                # print(maxlen)
-                # tmpp=len(inputList)
-                # textbox.configure(width=tmpp)
                 tmpArrayList=[]
                 temp="Compare AI "
                 for inp in inputList:
@@ -324,12 +336,15 @@ class info:
                 self.agentsPath=[None]*len(self.AgentsPos)
 
 
-        def checkAIno(self,i):
+        def checkAIno(self,i,canvas):
             """
             Function to update the AI number when user hover on the agent
             """
+            time=self.currentTime
             temp="AI: "+str(i)+"\nObj Cost: "+str(self.AgentCost[i])
             self.ai.config(text=temp)
+            x,y=self.AgentsPos[i][time]
+            self.blabla1(y,x,canvas)
 
 
         def linemaker(self,screen_points):
@@ -462,5 +477,5 @@ class info:
 
 
 if __name__=="__main__":
-    temp=info("test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25)
-    # temp=info("test_2.txt","debug-6-6.map.ecbs",2)
+    # temp=info("test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25)
+    temp=info("test_2.txt","debug-6-6.map.ecbs",2)
