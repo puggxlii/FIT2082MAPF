@@ -18,7 +18,7 @@ This is part of a university research project in developing an explanation gener
 ## Run the program
 - Generate the mapf solution by downloading [the lazycbs codebase](https://github.com/AppleGamer22/FIT2082) and following the instructions to run the code, then save the output to [agentsFile.txt].
 - In linux： python3 run.py [agentsFile.txt] [mapFile.ecbs] [agent number]
-- In Python: python run.py [agentsFile.txt] [mapFile.ecbs] [agent number] or double click run.py
+- In Python:  python run.py [agentsFile.txt] [mapFile.ecbs] [agent number] or double click run.py
 
 ### Functions
   - Play/pause the agents
