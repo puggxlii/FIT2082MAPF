@@ -27,6 +27,11 @@ This is part of a university research project in developing an explanation gener
   - See specific agent(s) movement in the scenario
   - Inspect agent's position in its lifespan (More Functions->Agent Detail)
   - (Available only in linux) Ask questions(More Functions->Ask Questions)
+| Syntax      | Description |
+| ----------- | ----------- |
+| Header      | Title       |
+| Paragraph   | Text        |
+
 | Agent| loc1(optional)| loc1(optional)|loc1(optional)|loc1(optional)|  		 question		|
 | - ------------ |-------------|------------- |-------------|------------- |-------------|				|
 |         1	    |                    |                    |                   |                     |          7        |   Can agent 1 have a time cost of 7 ? |  
