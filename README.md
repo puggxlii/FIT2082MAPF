@@ -31,7 +31,7 @@ This is part of a university research project in developing an explanation gener
 -
 | Agent| loc1(optional)|  loc2(optional)   |  time(optional)  |   cost(optional)  |  		 question     |
 | :---        |    :----:   |     :----:   |    :----:   |    :----:   |   ---: |
-|         1	    |                    |           |                 |     7        |   Can agent 1 have a time cost of 7 ? |  
-|         0	    |        3,4      |                 |        2          |           |   Can agent 0 not be at location (3,4) at timestep 2 ?|  
+|         1	    |                    |           |                 |     7        |   If there exist a new path for agent 1 to have a time cost of 7 ? |  
+|         0	    |        3,4      |                 |        -1(forbid)          |           |   What's the new path if agent 0 must not be at location (3,4) ?|  
 |         1	    |        3,4     |     3,5          |           |       |   What's the new path if agent 1 must travel through (3,4) and (3,5) ? |   
 
