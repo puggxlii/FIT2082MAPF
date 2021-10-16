@@ -27,7 +27,7 @@ This is part of a university research project in developing an explanation gener
   - See specific agent(s) movement in the scenario
   - Inspect agent's position in its lifespan (More Functions->Agent Detail)
   - (Available only in linux) Ask questions(More Functions->Ask Questions)
--
+-some examples
 | Agent| loc1(optional)|  loc2(optional)   |  time(optional)  |   cost(optional)  |  		 question     |
 | :---        |    :----:   |     :----:   |    :----:   |    :----:   |   ---: |
 |         1	    |                    |           |                 |     7        |   Can agent 1 have a time cost of 7 ? |  
