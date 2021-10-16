@@ -185,6 +185,11 @@ class myFrame(Frame):
 
             self.cost = Entry(self.newframe2,width=10)
             self.cost.pack()
+            
+            self.checkBoxVar = IntVar(value=0)
+            self.c = Checkbutton(self.newframe2, text = "Use current time", variable=self.checkBoxVar)
+            self.c.pack()
+            
             """ print out comparison """
             self.printButton2 = Button(self.newframe2, text = "run!",
                                       command = lambda: self.runModel(self.agent,self.location1, self.location2, self.time, self.cost,self.t2))
@@ -192,6 +197,7 @@ class myFrame(Frame):
             self.exitButton2 = Button(self.newframe2, text="Exit", highlightbackground="#56B426", command=self.destroy2)
             self.exitButton2.pack()
     def runModel(self,ai,loc1,loc2,time,cost,textbox):
+        global Info
         textbox.delete('1.0', END)
         try:
             ai = int(ai.get())
@@ -199,12 +205,28 @@ class myFrame(Frame):
             loc2a,loc2b = int(loc2.get().split(',')[0]),int(loc2.get().split(',')[1])
             time = int(time.get())
             cost = int(cost.get())
-            print(loc1a,loc1b,time)
+            boolean = self.checkBoxVar.get()
+            print(boolean)
         except ValueError:
-            print("typo error(s)")
-            return
+            loc1a,loc1b=-1,-2
+            loc2a,loc2b=-1,-2
+            time=-1
+            cost=-1
+            boolean=self.checkBoxVar.get()
+        print(Info.AgentsPos)
+        print(Info.BinaryMap)
+        print(Info.BinaryMap[0])
+        if boolean:
+            with open("test1.scen",'w') as out:
+                out.write("version 1\n")
+                for i in range(len(Info.AgentsPos)):
+                    tmp=str(i)+'\t'+'debug-6-6.map'+'\t'+str(len(Info.BinaryMap[0]))+'\t'+str(len(Info.BinaryMap))+'\t'+str(Info.AgentsPos[i][min(Info.currentTime,len(Info.AgentsPos[i])-1)][1]-1)+'\t'+str(Info.AgentsPos[i][min(Info.currentTime,len(Info.AgentsPos[i])-1)][0]-1)+'\t'+str(Info.AgentsPos[i][-1][1]-1)+'\t'+str(Info.AgentsPos[i][-1][0]-1)+'\t'+str(8)+'\n'
+                    out.write(tmp)
+        
+            out.close()
         # temp=init("../maps/debug-6-6.map.ecbs", "../scenarios/debug-6-6-2-2.scen", 2, [(0, ((-1, -2), (-1, -2)), -2, -100)])
         # textbox.insert("end",temp,'current')
+        
         textbox.see("end")
     def destroy2(self):
         tw = self.newWindow2

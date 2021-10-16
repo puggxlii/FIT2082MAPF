@@ -131,7 +131,7 @@ class info:
 
             tw.wm_overrideredirect(1)
             tw.wm_geometry("+%d+%d" % (x1,y1))
-            txt=str(y)+","+str(x)+"\n"+self.stuffMap[y][x]
+            txt=str(y-1)+","+str(x-1)+"\n"+self.stuffMap[y][x]
             """"""
 
 
@@ -405,6 +405,7 @@ class info:
             """
             Funciton that move each agents in one timestamp.
             """
+            frame.texxt.delete('1.0',END)
             self.currentTime=t  #this is for zoom in and zoom out
             if doBackward:
                 self.currentTime=t-1
@@ -481,3 +482,4 @@ class info:
 if __name__=="__main__":
     # temp=info("test_25.txt","warehouse-10-20-10-2-1.map.ecbs",25)
     temp=info("test_2.txt","debug-6-6.map.ecbs",2)
+    
